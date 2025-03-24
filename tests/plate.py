@@ -1,6 +1,8 @@
 import genesis as gs
 import numpy as np
 
+SIMULATION_TIME = 400
+
 def main():
     gs.init(backend=gs.cpu)
 
@@ -13,8 +15,9 @@ def main():
     )
 
     plate = scene.add_entity(
-        gs.morphs.Box(
-            size=(1.0, 1.0, 0.1),
+        gs.morphs.URDF(
+            file='robot/plate.urdf',
+            pos=(0, 0, 0.5),
         ),
     )
 
@@ -31,7 +34,7 @@ def main():
     cam.start_recording()
 
 def run_sim(scene, cam):
-    for i in range(120):
+    for i in range(SIMULATION_TIME):
         scene.step()
         cam.render()
     cam.stop_recording(save_to_filename='out/plate.mp4', fps=60)

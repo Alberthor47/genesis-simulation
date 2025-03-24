@@ -1,5 +1,7 @@
 import genesis as gs
 
+SIMULATION_TIME = 600
+
 def init_scene_and_cam():
     gs.init(backend=gs.cpu)
 
@@ -8,30 +10,30 @@ def init_scene_and_cam():
     # Floor as the ground.
     floor = scene.add_entity(gs.morphs.Plane())
 
-    # Ball, slightly above the plate.
+    # Ball as a URDF file.
     ball = scene.add_entity(
-        gs.morphs.Sphere(pos=(0, 0, 1.01), radius=0.05)
+        # gs.morphs.URDF(
+        #     file='robot/ball.urdf',
+        #     pos=(0, 0, 0.5),
+        # ),
+        gs.morphs.Sphere(
+            pos=(0, 0, 1),
+            radius=0.1,
+        ),
     )
 
-    # Plate as a Box.
+    # Plate as a URDF file.
     plate = scene.add_entity(
-        gs.morphs.Box(pos=(0, 0, 1), size=(0.5, 0.5, 0.1))
+        gs.morphs.URDF(
+            file='robot/plate.urdf',
+            pos=(0, 0, 0.25),
+        ),
     )
 
-    # Create a static base for the plate support.
-    base = scene.add_entity(
-        gs.morphs.Box(pos=(0, 0, 1), size=(0.1, 0.1, 0.1))
-    )
-
-    # Add a joint to connect the plate to the base.
-    # Here we use a revolute joint as an example, which allows rotation about one axis.
-    joint = scene.add_joint(
-        type=gs.joints.RevoluteJoint,
-        entity_a=plate,
-        entity_b=base,
-        pivot=(0, 0, 1),   # The pivot location in world coordinates.
-        axis=(0, 1, 0)     # The axis of rotation; adjust as needed.
-    )
+    # # Create a static base for the plate support.
+    # base = scene.add_entity(
+    #     gs.morphs.Box(pos=(0, 0, 1), size=(0.1, 0.1, 0.1))
+    # )
 
     # Add a camera.
     cam = scene.add_camera(
@@ -44,7 +46,7 @@ def init_scene_and_cam():
     return scene, cam
 
 def simulate(scene, cam):
-    for i in range(120):
+    for i in range(SIMULATION_TIME):
         scene.step()
         cam.render()
     cam.stop_recording(save_to_filename='out/b&p.mp4', fps=60)
